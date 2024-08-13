@@ -3,7 +3,7 @@ import "./navBar.css";
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 
-import CartWidget from "./CartWidget";
+import CartWidget from "../CartWidget/CartWidget";
 
 const NavBar = () => {
   const [categories, setCategories] = useState<string[]>([]);

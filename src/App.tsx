@@ -4,7 +4,7 @@ import ContactPage from './pages/ContactPage/ContactPage';
 import Footer from './components/Footer/Footer';
 import ItemDetails from './components/ItemDetails/ItemDetails';
 import ItemListContainer from './components/ItemListContainer/ItemListContainer';
-import NavBar from './components/NavBar';
+import NavBar from './components/NavBar/NavBar';
 
 // import React from 'react';
 

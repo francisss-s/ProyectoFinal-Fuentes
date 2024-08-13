@@ -1,9 +1,5 @@
-// pagina de productos
-
 import Footer from '../components/Footer/Footer';
-import NavBar from '../components/NavBar';
-
-// import React from 'react';
+import NavBar from '../components/NavBar/NavBar';
 
 const Productos = () => {
     return (
