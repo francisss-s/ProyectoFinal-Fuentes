@@ -5,7 +5,8 @@ import Footer from './components/Footer/Footer';
 import ItemDetails from './components/ItemDetails/ItemDetails';
 import ItemListContainer from './components/ItemListContainer/ItemListContainer';
 import NavBar from './components/NavBar';
-import React from 'react';
+
+// import React from 'react';
 
 function App() {
   return (

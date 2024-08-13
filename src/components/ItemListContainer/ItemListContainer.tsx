@@ -1,6 +1,6 @@
 import './ItemListContainer.css';
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Item from "../item/Item";
 import { useParams } from 'react-router-dom';
@@ -12,7 +12,7 @@ interface Item {
     image: string;
     description: string;
     category: string;
-    rating: object;
+    rating: { rate: number; count: number };
 }
 
 const ItemListContainer = () => {
