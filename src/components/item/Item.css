@@ -1,0 +1,73 @@
+/* Estilo General del Item */
+.item {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Imagen del Producto */
+.item-image {
+    width: 100%;
+    height: 150px; /* Altura reducida para ajustar mejor al espacio */
+    object-fit: contain; /* Asegura que la imagen completa sea visible */
+    transition: transform 0.3s;
+}
+
+.item:hover .item-image {
+    transform: scale(1.05);
+}
+
+/* Contenido del Item */
+.item-content {
+    padding: 15px; /* Reducido un poco para mantener el equilibrio visual */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.item-category {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.item-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+    margin: 0;
+}
+
+.item-rating {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+.item-rating::before {
+    content: "★";
+    margin-right: 5px;
+    color: #ffc107;
+}

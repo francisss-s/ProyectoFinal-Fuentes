@@ -1,0 +1,63 @@
+/* Estilo General del Footer */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .footer-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+  
+  .footer-social {
+    margin-top: 10px;
+  }
+  
+  .footer-social-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .footer-social-item {
+    margin: 0;
+  }
+  
+  .footer-social-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-social-link:hover {
+    color: #007bff;
+  }
+  
+  /* Responsividad */
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .footer-social-list {
+      gap: 10px;
+    }
+  }
+  

@@ -1,24 +1,53 @@
-import React from "react";
-import CartWidget from "./CartWidget";
 import "./navBar.css";
 
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+
+import CartWidget from "./CartWidget";
+
 const NavBar = () => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('https://fakestoreapi.com/products/categories');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/categoria/${category}`);
+  };
+
   return (
-    <nav>
+    <nav className="navbar">
       <ul>
-        <li>
-          <a href="#">Home</a>
+        <li className="navbar-item">
+          <Link to="/">Home</Link>
         </li>
-        <li>
-            <a href="#">Productos</a>
+        <li className="navbar-item">
+          <a href="/contacto">Contacto</a>
         </li>
-        <li>
-          <a href="#">Contact</a>
+        <li className="navbar-item dropdown">
+          <a href="#">Categorías</a>
+          <ul className="dropdown-content">
+            {categories.map(category => (
+              <li key={category} className="dropdown-item" onClick={() => handleCategoryClick(category)}>
+                {category}
+              </li>
+            ))}
+          </ul>
         </li>
       </ul>
-      <CartWidget />
-
-
+      <CartWidget className="CartWidget" />
     </nav>
   );
 };
