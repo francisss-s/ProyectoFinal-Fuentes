@@ -2,7 +2,8 @@
 
 import Footer from '../components/Footer/Footer';
 import NavBar from '../components/NavBar';
-import React from 'react';
+
+// import React from 'react';
 
 const Productos = () => {
     return (
