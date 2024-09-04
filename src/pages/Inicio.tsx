@@ -1,7 +1,8 @@
 import 'react-toastify/dist/ReactToastify.css';
 
 import Carousel from "../components/Carousel/Carousel"; // Asegúrate de que la ruta sea correcta
-import React from "react";
+
+// import React from "react";
 
 export default function Inicio() {
   return (

@@ -4,9 +4,9 @@ import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { EditarProducto } from "../EditProduct/EditProduct"; // Componente de edición
 import Swal from "sweetalert2";
 import { db } from "../../../firebase-config"; // Asegúrate de tener configurado Firebase
-import withReactContent from "sweetalert2-react-content";
 
-const MySwal = withReactContent(Swal);
+// import withReactContent from "sweetalert2-react-content";
+
 
 interface Producto {
   id: string;
