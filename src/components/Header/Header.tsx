@@ -35,33 +35,47 @@ export const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="bg-fern-frond-50 font-[Poppins]">
+    <header className="bg-beach-100 font-[Poppins] shadow-md">
       <nav className="flex justify-between items-center w-[92%] mx-auto py-4 relative">
         {/* Logo */}
         <div className="flex items-center space-x-4">
           <img className="w-16 h-16 cursor-pointer" src={logo} alt="Logo" />
-          <h1 className="text-xl font-bold text-gray-800">Arte Suyai</h1>
+          <h1 className="text-xl font-bold text-beach-800">Arte Suyai</h1>
         </div>
 
         {/* Menu Links */}
         <div
-          className={`nav-links md:static absolute duration-500 md:min-h-fit min-h-auto rounded-md pb-5 bg-fern-frond-50 left-0 w-full flex items-center md:w-auto px-5 ${
+          className={`nav-links md:static absolute duration-500 md:min-h-fit min-h-auto rounded-md pb-5 bg-beach-100 left-0 w-full flex items-center md:w-auto px-5 ${
             open ? "flex-col top-[100%]" : "hidden"
           }`}
         >
           <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
             <li>
-              <NavLink className="hover:text-fern-frond-950" to="/">
+              <NavLink className="text-beach-800 hover:text-beach-600" to="/">
                 Home
               </NavLink>
             </li>
             <li>
-              <NavLink className="hover:text-fern-frond-950" to="/productos">
+              <NavLink
+                className="text-beach-800 hover:text-beach-600"
+                to="/productos"
+              >
                 Productos
               </NavLink>
             </li>
             <li>
-              <NavLink className="hover:text-fern-frond-950" to="/about">
+              <NavLink
+                className="text-beach-800 hover:text-beach-600"
+                to="/gestionproductos"
+              >
+                Gestion Productos
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className="text-beach-800 hover:text-beach-600"
+                to="/about"
+              >
                 Sobre Mi
               </NavLink>
             </li>
@@ -72,7 +86,7 @@ export const Header: React.FC = () => {
         <div className="flex items-center gap-6">
           <CiMenuBurger
             onClick={handleMenu}
-            className="text-3xl cursor-pointer md:hidden"
+            className="text-3xl cursor-pointer md:hidden text-beach-800"
           />
         </div>
         <Cart />

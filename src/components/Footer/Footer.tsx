@@ -1,56 +1,36 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
 
-import { NavLink } from "react-router-dom";
-
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-fern-frond-50 text-gray-800 py-8">
+        <footer className="bg-beach-100 text-gray-800 py-8">
             <div className="container mx-auto px-4">
-                <div className="flex flex-col md:flex-row justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
                     {/* Logo y Descripción */}
                     <div className="mb-6 md:mb-0 text-center md:text-left">
-                        <h1 className="text-2xl font-bold mb-2">Mi Empresa</h1>
-                        <p className="text-sm">Tu descripción aquí, puede ser una frase o lema.</p>
-                    </div>
-
-                    {/* Enlaces de Navegación */}
-                    <div className="mb-6 md:mb-0">
-                        <ul className="flex flex-col md:flex-row items-center md:items-start gap-4">
-                            <li>
-                                <NavLink to="/" className="hover:text-fern-frond-950">Home</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/productos" className="hover:text-fern-frond-950">Productos</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/about" className="hover:text-fern-frond-950">Sobre Mi</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/contact" className="hover:text-fern-frond-950">Contacto</NavLink>
-                            </li>
-                        </ul>
+                        <h1 className="text-2xl font-bold mb-2 text-beach-800">Arte Suyai</h1>
+                        <p className="text-sm text-beach-700">Pequeños amigos, grandes abrazos.</p>
                     </div>
 
                     {/* Redes Sociales */}
-                    <div className="flex justify-center md:justify-end items-center gap-4">
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-fern-frond-950">
+                    <div className="flex justify-center md:justify-end items-center gap-6 mt-4 md:mt-0">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-beach-800 hover:text-beach-600 text-xl">
                             <FaFacebookF />
                         </a>
-                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-fern-frond-950">
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-beach-800 hover:text-beach-600 text-xl">
                             <FaTwitter />
                         </a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-fern-frond-950">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-beach-800 hover:text-beach-600 text-xl">
                             <FaInstagram />
                         </a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-fern-frond-950">
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-beach-800 hover:text-beach-600 text-xl">
                             <FaLinkedinIn />
                         </a>
                     </div>
                 </div>
 
                 {/* Copyright */}
-                <div className="text-center mt-8 text-sm">
-                    &copy; {new Date().getFullYear()} Mi Empresa. Todos los derechos reservados.
+                <div className="text-center mt-8 text-sm text-beach-700">
+                    &copy; {new Date().getFullYear()} Arte Suyai. Todos los derechos reservados.
                 </div>
             </div>
         </footer>
