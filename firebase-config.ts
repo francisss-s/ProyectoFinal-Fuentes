@@ -1,22 +1,19 @@
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { initializeApp } from 'firebase/app';
+// src/firebaseConfig.ts
+
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC1x4rkGALfe6puVca-iSS_U7KBjEbQG20",
-    authDomain: "amigurumis-e14f5.firebaseapp.com",
-    projectId: "amigurumis-e14f5",
-    storageBucket: "amigurumis-e14f5.appspot.com",
-    messagingSenderId: "628359801883",
-    appId: "1:628359801883:web:c2722213ae89959d021cbe",
-    measurementId: "G-1CDF10ZZM9"
-  };
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+};
 
-// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-
-// Inicializar Firestore y Storage
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-export { db, storage };
+export const db = getFirestore(app);
+export const storage = getStorage(app);
