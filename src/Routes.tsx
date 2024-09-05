@@ -51,5 +51,9 @@ export const router = createBrowserRouter([
         element: <Navigate to="/" replace />,
       },
     ],
-  },
+    
+  },{
+    path: "/inicio",
+    element: <Navigate to='/' replace/>,
+},
 ]);
