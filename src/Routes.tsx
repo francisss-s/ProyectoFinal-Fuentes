@@ -2,10 +2,12 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import About from "./pages/About";
 import App from "./App";
-import DetalleProducto from "./components/DetalleProducto/DetalleProducto";
-import { GestionProductos } from "./pages/GestionProductos";
-import Inicio from "./pages/Inicio";
-import Productos from "./pages/Productos";
+import CartPage from "./pages/CartPage";
+import HomePage from "./pages/HomePage";
+import OrderManagementPage from "./pages/OrderManagementPage";
+import ProductDetailPage from "./components/ProductDetailPage/ProductDetailPage";
+import ProductManagement from "./pages/ProductManagement";
+import ProductsPage  from "./pages/ProductsPage";
 
 export const router = createBrowserRouter([
     {
@@ -19,23 +21,31 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/inicio",
-                element: <Inicio />,
+                element: <HomePage />,
             },
             {
                 path: "/productos",
-                element: <Productos />,
+                element: <ProductsPage />,
             },
             {
                 path: "/productos/:id", // Ruta dinámica para el detalle del producto
-                element: <DetalleProducto />,
+                element: <ProductDetailPage />,
             },
             {
                 path: "/gestionproductos",
-                element: <GestionProductos />,
+                element: <ProductManagement />,
             },
             {
                 path: "/about",
                 element: <About />,
+            },
+            {
+                path: "/gestionOrdenes",
+                element: <OrderManagementPage />,
+            },
+            {
+                path: "/carrito",
+                element: <CartPage />,
             }
         ]
     },

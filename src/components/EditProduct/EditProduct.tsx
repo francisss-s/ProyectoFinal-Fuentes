@@ -1,56 +1,65 @@
-import React, { useState } from "react";
+// src/components/EditProduct/EditProduct.tsx
+
+import React, { useEffect, useState } from "react";
 import { db, storage } from "../../../firebase-config";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
+import { Product } from "../../types/interfaces"; // Asegúrate de importar la interfaz correcta
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
 
-interface Producto {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  tamano: string;
-  material: string;
-  cantidad: number;
-  fotoPortada: string;
-  fotosExtras: string[];
-}
-
-interface EditarProductoProps {
-  producto: Producto;
+interface EditProductProps {
+  productId: string;
   onClose: () => void;
-  onProductoActualizado: () => void;
 }
 
-export const EditarProducto: React.FC<EditarProductoProps> = ({ producto, onClose, onProductoActualizado }) => {
-  const [nombre, setNombre] = useState(producto.nombre);
-  const [descripcion, setDescripcion] = useState(producto.descripcion);
-  const [tamano, setTamano] = useState(producto.tamano);
-  const [material, setMaterial] = useState(producto.material);
-  const [cantidad, setCantidad] = useState(producto.cantidad);
-  const [fotoPortada, setFotoPortada] = useState<File | null>(null);
-  const [previewFotoPortada, setPreviewFotoPortada] = useState<string>(producto.fotoPortada);
-  const [fotosExtras, setFotosExtras] = useState<File[]>([]);
-  const [previewFotosExtras, setPreviewFotosExtras] = useState<string[]>(producto.fotosExtras);
+const EditProduct: React.FC<EditProductProps> = ({ productId, onClose }) => {
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleFotoPortadaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setFotoPortada(file);
-      setPreviewFotoPortada(URL.createObjectURL(file));
-    }
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const productRef = doc(db, "productos", productId);
+      const productSnap = await getDoc(productRef);
+
+      if (productSnap.exists()) {
+        setProduct({ id: productSnap.id, ...productSnap.data() } as Product);
+      } else {
+        console.log("No such product!");
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setProduct({
+      ...product!,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleFotosExtrasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setFotosExtras(filesArray);
-      const previewArray = filesArray.map((file) => URL.createObjectURL(file));
-      setPreviewFotosExtras(previewArray);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, isCoverImage = false) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const storageRef = ref(storage, `productos/${file.name}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const fileURL = await getDownloadURL(uploadTask.ref);
+
+      if (isCoverImage) {
+        setProduct({
+          ...product!,
+          fotoPortada: fileURL,
+        });
+      } else {
+        setProduct({
+          ...product!,
+          fotosExtras: [...product!.fotosExtras, fileURL],
+        });
+      }
     }
   };
 
@@ -59,162 +68,178 @@ export const EditarProducto: React.FC<EditarProductoProps> = ({ producto, onClos
     setLoading(true);
 
     try {
-      let fotoPortadaURL = producto.fotoPortada;
+      const productRef = doc(db, "productos", productId);
 
-      if (fotoPortada) {
-        const storageRef = ref(storage, `productos/${fotoPortada.name}`);
-        const uploadTask = await uploadBytesResumable(storageRef, fotoPortada);
-        fotoPortadaURL = await getDownloadURL(uploadTask.ref);
-      }
-
-      let fotosExtrasURLs = producto.fotosExtras;
-
-      if (fotosExtras.length > 0) {
-        fotosExtrasURLs = await Promise.all(
-          fotosExtras.map(async (foto) => {
-            const storageRef = ref(storage, `productos/${foto.name}`);
-            const uploadTask = await uploadBytesResumable(storageRef, foto);
-            return await getDownloadURL(uploadTask.ref);
-          })
-        );
-      }
-
-      await updateDoc(doc(db, "productos", producto.id), {
-        nombre,
-        descripcion,
-        tamano,
-        material,
-        cantidad,
-        fotoPortada: fotoPortadaURL,
-        fotosExtras: fotosExtrasURLs,
+      await updateDoc(productRef, {
+        nombre: product!.nombre,
+        descripcion: product!.descripcion,
+        tamano: product!.tamano,
+        material: product!.material,
+        cantidad: product!.cantidad,
+        precio: product!.precio,
+        fotoPortada: product!.fotoPortada,
+        fotosExtras: product!.fotosExtras,
       });
 
       MySwal.fire({
         icon: "success",
-        title: "Producto actualizado con éxito",
+        title: "Product updated successfully",
         showConfirmButton: false,
         timer: 1500,
       });
 
-      onProductoActualizado();
+      onClose();
     } catch (error) {
-      console.error("Error al actualizar producto: ", error);
+      console.error("Error updating product: ", error);
       MySwal.fire({
         icon: "error",
-        title: "Hubo un error al actualizar el producto",
-        text: "Por favor, inténtalo de nuevo.",
+        title: "There was an error updating the product",
+        text: "Please try again.",
       });
     } finally {
       setLoading(false);
     }
   };
 
+  if (!product) return <div>Loading...</div>;
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-gray-50 p-6 rounded shadow-lg w-96 overflow-y-auto max-h-screen">
-        <h2 className="text-xl font-bold mb-4">Editar Producto</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label className="block mb-2">Nombre</label>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded shadow-lg w-full max-w-3xl h-auto overflow-y-auto relative">
+        {/* Botón de cerrar en la parte superior */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-sea-700 hover:text-sea-900 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4 text-center text-blue-600">Edit Product</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Campos del formulario */}
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Nombre</label>
             <input
               type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              name="nombre"
+              value={product.nombre}
+              onChange={handleInputChange}
               className="border rounded px-2 py-1 w-full"
               required
             />
           </div>
-          <div>
-            <label className="block mb-2">Descripción</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Descripción</label>
             <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              name="descripcion"
+              value={product.descripcion}
+              onChange={handleInputChange}
               className="border rounded px-2 py-1 w-full"
               required
             />
           </div>
-          <div>
-            <label className="block mb-2">Tamaño</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Tamaño</label>
             <input
               type="text"
-              value={tamano}
-              onChange={(e) => setTamano(e.target.value)}
+              name="tamano"
+              value={product.tamano}
+              onChange={handleInputChange}
               className="border rounded px-2 py-1 w-full"
               required
             />
           </div>
-          <div>
-            <label className="block mb-2">Material</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Material</label>
             <input
               type="text"
-              value={material}
-              onChange={(e) => setMaterial(e.target.value)}
+              name="material"
+              value={product.material}
+              onChange={handleInputChange}
               className="border rounded px-2 py-1 w-full"
               required
             />
           </div>
-          <div>
-            <label className="block mb-2">Cantidad</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Cantidad</label>
             <input
               type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(Number(e.target.value))}
+              name="cantidad"
+              value={product.cantidad}
+              onChange={handleInputChange}
               className="border rounded px-2 py-1 w-full"
               min="1"
               required
             />
           </div>
-          <div>
-            <label className="block mb-2">Foto de Portada</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Precio</label>
+            <input
+              type="number"
+              name="precio"
+              value={product.precio}
+              onChange={handleInputChange}
+              className="border rounded px-2 py-1 w-full"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Foto de Portada</label>
             <input
               type="file"
-              onChange={handleFotoPortadaChange}
+              onChange={(e) => handleFileChange(e, true)}
               className="border rounded px-2 py-1 w-full"
               accept="image/*"
             />
-            <div className="mt-2">
+            {product.fotoPortada && (
               <img
-                src={previewFotoPortada}
+                src={product.fotoPortada}
                 alt="Preview Foto de Portada"
-                className="w-32 h-32 object-cover"
+                className="w-48 h-48 object-cover mt-2 rounded"
               />
-            </div>
+            )}
           </div>
-          <div>
-            <label className="block mb-2">Fotos Extras</label>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Fotos Extras</label>
             <input
               type="file"
-              onChange={handleFotosExtrasChange}
+              onChange={(e) => handleFileChange(e, false)}
               className="border rounded px-2 py-1 w-full"
               multiple
               accept="image/*"
             />
             <div className="flex flex-wrap gap-2 mt-2">
-              {previewFotosExtras.map((foto, index) => (
+              {product.fotosExtras.map((foto, index) => (
                 <img
                   key={index}
                   src={foto}
                   alt={`Preview Foto Extra ${index + 1}`}
-                  className="w-32 h-32 object-cover"
+                  className="w-24 h-24 object-cover rounded"
                 />
               ))}
             </div>
           </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
-            disabled={loading}
-          >
-            {loading ? "Guardando..." : "Guardar Cambios"}
-          </button>
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-800 py-2 px-4 rounded mt-4 ml-2"
-          >
-            Cancelar
-          </button>
+          <div className="col-span-2 flex justify-between items-center">
+            <button
+              type="submit"
+              className="bg-sea-500 hover:bg-sea-600 text-white py-2 px-4 rounded mt-4"
+              disabled={loading}
+            >
+              {loading ? "Guardando..." : "Actualizar Producto"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mt-4"
+            >
+              Cerrar
+            </button>
+          </div>
         </form>
       </div>
     </div>
   );
 };
+
+export default EditProduct;

@@ -15,7 +15,7 @@ export default {
       }
     },
     colors: {
-      
+      white: '#ffffff',
       gray: {
         '50':  '#f9fafb',
         '100': '#f4f5f7',

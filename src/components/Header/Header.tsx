@@ -52,7 +52,7 @@ export const Header: React.FC = () => {
           <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
             <li>
               <NavLink className="text-beach-800 hover:text-beach-600" to="/">
-                Home
+                Inicio
               </NavLink>
             </li>
             <li>
@@ -69,6 +69,14 @@ export const Header: React.FC = () => {
                 to="/gestionproductos"
               >
                 Gestion Productos
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className="text-beach-800 hover:text-beach-600"
+                to="/gestionOrdenes"
+              >
+                Gestion Ordenes
               </NavLink>
             </li>
             <li>

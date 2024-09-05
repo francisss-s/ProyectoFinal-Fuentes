@@ -1,6 +1,8 @@
+// src/components/AddProductForm/AddProductForm.tsx
+
 import React, { useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
-import { db, storage } from "../../../firebase-config"; // Asegúrate de tener configurado Firebase
+import { db, storage } from "../../../firebase-config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 import Swal from "sweetalert2";
@@ -8,16 +10,17 @@ import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
 
-interface AgregarProductoProps {
+interface AddProductFormProps {
   onClose: () => void;
 }
 
-export const AgregarProducto: React.FC<AgregarProductoProps> = ({ onClose }) => {
+const AddProductForm: React.FC<AddProductFormProps> = ({ onClose }) => {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [tamano, setTamano] = useState("");
   const [material, setMaterial] = useState("");
-  const [cantidad, setCantidad] = useState<number>(1); // Estado para la cantidad
+  const [cantidad, setCantidad] = useState<number>(1);
+  const [precio, setPrecio] = useState<number>(0);
   const [fotoPortada, setFotoPortada] = useState<File | null>(null);
   const [previewFotoPortada, setPreviewFotoPortada] = useState<string | null>(null);
   const [fotosExtras, setFotosExtras] = useState<File[]>([]);
@@ -70,6 +73,7 @@ export const AgregarProducto: React.FC<AgregarProductoProps> = ({ onClose }) => 
         tamano,
         material,
         cantidad,
+        precio,
         fotoPortada: fotoPortadaURL,
         fotosExtras: fotosExtrasURLs,
         creadoEn: new Date(),
@@ -80,7 +84,8 @@ export const AgregarProducto: React.FC<AgregarProductoProps> = ({ onClose }) => 
       setDescripcion("");
       setTamano("");
       setMaterial("");
-      setCantidad(1); // Reinicia la cantidad a 1
+      setCantidad(1);
+      setPrecio(0);
       setFotoPortada(null);
       setPreviewFotoPortada(null);
       setFotosExtras([]);
@@ -88,12 +93,12 @@ export const AgregarProducto: React.FC<AgregarProductoProps> = ({ onClose }) => 
 
       MySwal.fire({
         icon: "success",
-        title: "Producto agregado con éxito",
+        title: "Producto agregado exitosamente",
         showConfirmButton: false,
         timer: 1500,
       });
 
-      onClose(); // Cierra el modal después de agregar el producto
+      onClose();
     } catch (error) {
       console.error("Error al agregar producto: ", error);
       MySwal.fire({
@@ -107,100 +112,137 @@ export const AgregarProducto: React.FC<AgregarProductoProps> = ({ onClose }) => 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4">
-      <div>
-        <label className="block mb-2 text-blue-700">Nombre</label>
-        <input
-          type="text"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
-          required
-        />
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Descripción</label>
-        <textarea
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
-          required
-        />
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Tamaño</label>
-        <input
-          type="text"
-          value={tamano}
-          onChange={(e) => setTamano(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
-          required
-        />
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Material</label>
-        <input
-          type="text"
-          value={material}
-          onChange={(e) => setMaterial(e.target.value)}
-          className="border rounded px-2 py-1 w-full"
-          required
-        />
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Cantidad</label>
-        <input
-          type="number"
-          value={cantidad}
-          onChange={(e) => setCantidad(Number(e.target.value))}
-          className="border rounded px-2 py-1 w-full"
-          min="1"
-          required
-        />
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Foto de Portada</label>
-        <input
-          type="file"
-          onChange={handleFotoPortadaChange}
-          className="border rounded px-2 py-1 w-full"
-          accept="image/*"
-        />
-        {previewFotoPortada && (
-          <img
-            src={previewFotoPortada}
-            alt="Preview Foto de Portada"
-            className="w-32 h-32 object-cover mt-2"
-          />
-        )}
-      </div>
-      <div>
-        <label className="block mb-2 text-blue-700">Fotos Extras</label>
-        <input
-          type="file"
-          onChange={handleFotosExtrasChange}
-          className="border rounded px-2 py-1 w-full"
-          multiple
-          accept="image/*"
-        />
-        <div className="flex flex-wrap gap-2 mt-2">
-          {previewFotosExtras.map((foto, index) => (
-            <img
-              key={index}
-              src={foto}
-              alt={`Preview Foto Extra ${index + 1}`}
-              className="w-32 h-32 object-cover"
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white p-6 rounded shadow-lg w-full max-w-3xl h-auto overflow-y-auto relative">
+        {/* Botón de cerrar en la parte superior */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-sea-700 hover:text-sea-900 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4 text-center text-blue-600">Agregar Producto</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Campos del formulario */}
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Nombre</label>
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+              required
             />
-          ))}
-        </div>
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Descripción</label>
+            <textarea
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Tamaño</label>
+            <input
+              type="text"
+              value={tamano}
+              onChange={(e) => setTamano(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Material</label>
+            <input
+              type="text"
+              value={material}
+              onChange={(e) => setMaterial(e.target.value)}
+              className="border rounded px-2 py-1 w-full"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Cantidad</label>
+            <input
+              type="number"
+              value={cantidad}
+              onChange={(e) => setCantidad(Number(e.target.value))}
+              className="border rounded px-2 py-1 w-full"
+              min="1"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Precio</label>
+            <input
+              type="number"
+              value={precio}
+              onChange={(e) => setPrecio(Number(e.target.value))}
+              className="border rounded px-2 py-1 w-full"
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Foto de Portada</label>
+            <input
+              type="file"
+              onChange={handleFotoPortadaChange}
+              className="border rounded px-2 py-1 w-full"
+              accept="image/*"
+            />
+            {previewFotoPortada && (
+              <img
+                src={previewFotoPortada}
+                alt="Preview Foto de Portada"
+                className="w-48 h-48 object-cover mt-2 rounded"
+              />
+            )}
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <label className="block mb-2 text-blue-700">Fotos Extras</label>
+            <input
+              type="file"
+              onChange={handleFotosExtrasChange}
+              className="border rounded px-2 py-1 w-full"
+              multiple
+              accept="image/*"
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {previewFotosExtras.map((foto, index) => (
+                <img
+                  key={index}
+                  src={foto}
+                  alt={`Preview Foto Extra ${index + 1}`}
+                  className="w-24 h-24 object-cover rounded"
+                />
+              ))}
+            </div>
+          </div>
+          <div className="col-span-2 flex justify-between items-center">
+            <button
+              type="submit"
+              className="bg-sea-500 hover:bg-sea-600 text-white py-2 px-4 rounded mt-4"
+              disabled={loading}
+            >
+              {loading ? "Guardando..." : "Agregar Producto"}
+            </button>
+            {/* Botón para cerrar el modal en la parte inferior */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mt-4"
+            >
+              Cerrar
+            </button>
+          </div>
+        </form>
       </div>
-      <button
-        type="submit"
-        className="bg-sea-500 hover:bg-sea-600 text-white py-2 px-4 rounded mt-4"
-        disabled={loading}
-      >
-        {loading ? "Guardando..." : "Agregar Producto"}
-      </button>
-    </form>
+    </div>
   );
 };
+
+export default AddProductForm;
