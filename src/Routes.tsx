@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
         ]
     },
     {
-    path: "/*",
+    path: "*",
     element: <Navigate to="/inicio" replace={true} />,
     }
 ]);
