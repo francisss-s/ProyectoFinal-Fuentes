@@ -4,8 +4,12 @@ import React, { useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
 
 import Button from "../components/common/Button/Button";
+import Swal from "sweetalert2";
 import { db } from "../../firebase-config";
 import { useCart } from "../context/CartContext";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -13,12 +17,22 @@ const CartPage: React.FC = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [orderTotal, setOrderTotal] = useState<number>(0); // Estado para almacenar el total del pedido
 
   const handleCheckout = async () => {
     if (!customerName || !customerEmail || !customerAddress) {
-      alert("Please fill in all fields.");
+      MySwal.fire({
+        icon: "warning",
+        title: "Faltan campos",
+        text: "Por favor, completa todos los campos.",
+      });
       return;
     }
+
+    // Calcular el total del pedido
+    const total = cart.reduce((sum, { product, quantity }) => sum + product.precio * quantity, 0);
+    setOrderTotal(total);
 
     const orderData = {
       customerName,
@@ -30,17 +44,37 @@ const CartPage: React.FC = () => {
         precio: product.precio,
         cantidad: quantity,
       })),
+      total, // Añadir el total al objeto de datos del pedido
       createdAt: new Date(),
     };
 
     try {
-      await addDoc(collection(db, "ordenCompra"), orderData);
-      alert("Order placed successfully!");
+      const docRef = await addDoc(collection(db, "ordenCompra"), orderData);
+      const orderId = docRef.id; // Guardar el ID de la orden
+
+      MySwal.fire({
+        icon: "success",
+        title: "¡Orden completada con éxito!",
+        html: `
+          <p>Tu ID de orden es: <strong>${orderId}</strong></p>
+          <p>Gracias por tu compra, ${customerName}.</p>
+          <p>Hemos enviado una confirmación a tu correo electrónico: ${customerEmail}.</p>
+          <p>Total de la orden: <strong>$${total.toFixed(2)}</strong></p>
+          <p>Tu orden será enviada a: ${customerAddress}</p>
+          <p>Si tienes alguna pregunta, por favor contáctanos en support@suyai.com.</p>
+        `,
+        confirmButtonText: "Cerrar",
+      });
+
       clearCart();
       setShowCheckoutForm(false);
     } catch (error) {
       console.error("Error placing order: ", error);
-      alert("There was an error placing your order. Please try again.");
+      MySwal.fire({
+        icon: "error",
+        title: "Error al realizar la compra",
+        text: "Hubo un error al procesar tu orden. Por favor, inténtalo de nuevo.",
+      });
     }
   };
 
@@ -48,7 +82,7 @@ const CartPage: React.FC = () => {
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold text-center mb-8 text-blue-700">Tu carrito de compras</h1>
       {cart.length === 0 ? (
-        <p className="text-center text-gray-700">Tu carrito esta vacio</p>
+        <p className="text-center text-gray-700">Tu carrito está vacío</p>
       ) : (
         <div className="space-y-4">
           {cart.map(({ product, quantity }) => (
@@ -60,7 +94,7 @@ const CartPage: React.FC = () => {
                 <p>Precio: ${product.precio * quantity}</p>
               </div>
               <div className="flex items-center">
-                <Button text="Remove" onClick={() => removeFromCart(product.id)} variant="danger" />
+                <Button text="Eliminar" onClick={() => removeFromCart(product.id)} variant="danger" />
                 <input
                   type="number"
                   min="1"
@@ -71,15 +105,15 @@ const CartPage: React.FC = () => {
               </div>
             </div>
           ))}
-          <div className="text-right flex flex-col *:p-5 *:m-5" >
-            <Button text="Clear Cart" onClick={clearCart} variant="danger" />
-            <Button text="Proceed to Checkout" onClick={() => setShowCheckoutForm(true)} variant="primary"/>
+          <div className="text-right flex flex-col p-5">
+            <Button text="Vaciar Carrito" onClick={clearCart} variant="danger" />
+            <Button text="Proceder a la compra" onClick={() => setShowCheckoutForm(true)} variant="primary"/>
           </div>
 
           {/* Formulario de compra */}
           {showCheckoutForm && (
             <div className="mt-8 border rounded p-4">
-              <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">Checkout</h2>
+              <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">Datos Cliente</h2>
               <form className="space-y-4">
                 <div>
                   <label className="block mb-2 text-gray-700">Nombre</label>
@@ -102,7 +136,7 @@ const CartPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 text-gray-700">Direccion</label>
+                  <label className="block mb-2 text-gray-700">Dirección</label>
                   <textarea
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}

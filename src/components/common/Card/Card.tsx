@@ -28,9 +28,17 @@ const Card: React.FC<CardProps> = ({
   onViewDetail = () => {},
 }) => {
   const [quantity, setQuantity] = useState<number>(1);
+  const [addedToCart, setAddedToCart] = useState<boolean>(false); // Estado para verificar si el producto ha sido añadido al carrito
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product, quantity);
+    }
+    setAddedToCart(true); // Actualizar el estado cuando se añade al carrito
+  };
 
   return (
-    <div className="border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-300">
+    <div className="border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-300 relative">
       <img
         src={product.fotoPortada}
         alt={product.nombre}
@@ -51,11 +59,16 @@ const Card: React.FC<CardProps> = ({
           <p className="text-gray-700 text-sm mt-2">Stock: {product.cantidad}</p>
         )}
 
-        {/* Mostrar el contador si showCounter es verdadero */}
-        {showCounter && (
-          <div className="flex justify-between items-center mt-4">
-            <Counter initialCount={1} min={1} max={product.cantidad} onChange={setQuantity} />
-          </div>
+        {/* Mostrar el contador y botón de agregar al carrito si el producto no ha sido añadido */}
+        {showCounter && !addedToCart && (
+          <>
+            <div className="flex justify-between items-center mt-4">
+              <Counter initialCount={1} min={1} max={product.cantidad} onChange={setQuantity} />
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <Button text="Add to Cart" onClick={handleAddToCart} variant="secondary" />
+            </div>
+          </>
         )}
 
         {/* Botón de acción principal */}
@@ -65,11 +78,11 @@ const Card: React.FC<CardProps> = ({
           </div>
         )}
 
-        {/* Botón para agregar al carrito si showCounter es verdadero */}
-        {showCounter && (
-          <div className="flex justify-between items-center mt-4">
-            <Button text="Add to Cart" onClick={() => onAddToCart(product, quantity)} variant="secondary" />
-          </div>
+        {/* Mensaje de confirmación de añadido al carrito */}
+        {addedToCart && (
+          <p className="text-green-600 text-sm font-semibold mt-4">
+           Producto en el carrito!
+          </p>
         )}
       </div>
     </div>
