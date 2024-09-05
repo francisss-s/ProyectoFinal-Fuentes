@@ -18,7 +18,7 @@ const CartPage: React.FC = () => {
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [orderTotal, setOrderTotal] = useState<number>(0); // Estado para almacenar el total del pedido
+  const [, setOrderTotal] = useState<number>(0); // Estado para almacenar el total del pedido
 
   const handleCheckout = async () => {
     if (!customerName || !customerEmail || !customerAddress) {
