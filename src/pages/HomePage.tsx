@@ -2,8 +2,9 @@
 
 import Carousel from "../components/Carousel/Carousel";
 import FeaturedProducts from "../components/FeaturedProducts/FeaturedProducts";
-import Promotions from "../components/Promotions/Promotions";
-import QuickViewSection from "../components/QuickViewSection/QuickViewSection";
+
+// import Promotions from "../components/Promotions/Promotions";
+// import QuickViewSection from "../components/QuickViewSection/QuickViewSection";
 
 export default function HomePage() {
   return (
